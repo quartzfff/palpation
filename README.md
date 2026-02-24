@@ -1,23 +1,20 @@
-Palpation and Kinematic Calibration Package
+# Palpation and Kinematic Calibration Package
 
 This repository contains ROS 2 packages for NDI Aurora tracking, NetFT force sensing, and automated palpation grid routines.
-1. Hardware Setup
+
+## 1. Hardware Setup
 
 Before running the software, ensure:
+* **NDI Aurora:** Connected via Serial/USB.
+* **ATI Force Sensor:** Connected via Ethernet.
+* **Network:** Set your wired connection to a static IP (usually in the `192.168.1.x` range).
+* **Verify ATI:** Open a browser and go to `192.168.1.1`. The ATI sensor is used to collect force data; the sync node will not run without a live force data stream.
 
-    NDI Aurora: Connected via Serial/USB.
-
-    ATI Force Sensor: Connected via Ethernet.
-
-    Network: Set your wired connection to a static IP (usually in the 192.168.1.x range).
-
-    Verify ATI: Open a browser and go to 192.168.1.1 to ensure the sensor is streaming.
-
-2. Robot Initialization
+## 2. Robot Initialization
 
 To enable communication with the robot, navigate to your core library and setup the CAN interface:
-Bash
 
+```bash
 cd ~/aliss_core/src/teleop/ves-ros-interface
 sudo ./setup-can.sh
 
@@ -44,7 +41,7 @@ ros2 topic pub /ves/left/joint/servo_cp geometry_msgs/PoseStamped "{
 
 4. Launching Sensors
 
-Launch the NDI and Force sensor synchronization node. Both sensors must be connected for the stream to start.
+Launch the NDI and Force sensor synchronization node. Ensure the network wired connection is selected and both sensors are connected.
 Bash
 
 cd ~/code/palpation
@@ -57,15 +54,16 @@ Bash
 
 ros2 run ves_kinematic_calibration palpation_grid
 
-Configuration Tips:
+Configuration Tips
 
-The logic is located in palpation_grid.py. If you modify these, you must rebuild the workspace.
+The logic is located in palpation_grid.py. If you modify these parameters, you must rebuild the workspace.
 
-    Grid Points: Edit self.grid_points = [] (around line 93) to define your surface points.
+    Grid Points: Edit self.grid_points = [] (around line 93) to insert individual grid points at the surface depth.
 
-    Depth/Direction: Adjust lines 81 and 82 for pushing depth and direction (in meters).
+    Depth/Direction: Adjust lines 81 and 82 to change pushing direction and pushing depth. Be careful: everything is in meters!
 
-    Data Logging: Change the filename in self.logfile = open('your_filename.csv', 'w', ...) to avoid overwriting data.
+    Data Logging: Change the CSV filename to avoid overwriting data:
+    self.logfile = open('pbh_palpation_grid_002_anglepush.csv', 'w', newline='')
 
 6. Building the Code
 
