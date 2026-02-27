@@ -29,6 +29,8 @@ setup(
             
             'palpation_grid = ves_kinematic_calibration.palpation_grid:main',
 
+            'palpation_kuka = ves_kinematic_calibration.palpation_kuka:main',
+
         ],
     },
 )
