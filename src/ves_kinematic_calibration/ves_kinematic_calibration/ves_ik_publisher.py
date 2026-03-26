@@ -57,7 +57,7 @@ class PalpationGrid(Node):
 
         # Waypoint Grid (METERS)
         self.grid_points = [
-            [0, -0.005, 0.0193, 0, 0, 0, 1],
+            [0, -0.006, 0.025, 0, 0, 0, 1],
  
         ]
 
