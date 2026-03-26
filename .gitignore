@@ -10,3 +10,5 @@ __pycache__/
 # Ignore local IDE settings
 .vscode/
 .idea/
+*.mcap
+rosbag2_*
