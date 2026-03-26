@@ -1,97 +1,139 @@
+import numpy as np
+from scipy.optimize import minimize_scalar
+
+
 class VirtuosoKinematics:
-    def __init__(self, kappa=60.0, tool_len=0.0):
-        # All inputs here should be in METERS
-        self.kappa = kappa  # 60.0 (1/m)
-        self.tool_len = tool_len  # Extension in meters
-        self.collar_len = 0.005  # 5mm guide collar
-        self.r_tube = 1.0 / kappa  # Radius in meters
-        self.c_m = 0.0003  # 0.3mm clearance in meters
+    def __init__(self, kappa=60.0, tool_len=0.015):
+        # All inputs in METERS
+        self.kappa = kappa
+        self.tool_len = tool_len
+        self.collar_len = 0.005
+        self.c_m = 0.0003
+        # Physical tube radius matching opts.r_mm = 1000/kappa in MATLAB
+        self.r_tube_m = 1.0 / kappa
 
     def solve_ik(self, p_target):
         """
         Input: p_target [x, y, z] in METERS
-        Output: [ir, or, it, ot, tool] in METERS/RADIANS
+        Output: [theta1, theta2, d1_m, d2_m, tool_m]
         """
-        # Internal conversion to MM for numerical stability during solving
-        target_mm = np.array(p_target) * 1000.0
+        # 1. Convert to MM for numerical stability (matching MATLAB)
+        target_mm = np.array(p_target).flatten() * 1000.0
         kappa_mm = self.kappa / 1000.0
         R_mm = 1.0 / kappa_mm
         collar_mm = self.collar_len * 1000.0
-        r_tube_mm = self.r_tube * 1000.0
         c_mm = self.c_m * 1000.0
         tool_mm = self.tool_len * 1000.0
+        r_mm = self.r_tube_m * 1000.0
+        D1_MAX_MM = 20.0
 
-        x, y, z = target_mm
-        theta = float(np.arctan2(x, -y))
-        r_target = np.sqrt(x ** 2 + y ** 2)
-        z_target = z
+        # 2. Step 1: Solve Azimuth (theta1)
+        theta1 = float(np.arctan2(target_mm[0], -target_mm[1]))
+        theta2 = theta1
 
-        def find_err(d1):
-            L = max(d1 - collar_mm, 0)
-            alpha = L / R_mm
-            L_in = max(0, collar_mm - d1)
+        # 3. Define Internal Cost Function
+        def physical_cost_exact(d1):
+            # A. Arc Geometry
+            L = max(d1 - collar_mm, 0.0)
+            a = L / R_mm
+            if L > 0:
+                r_arc = R_mm * (1.0 - np.cos(a))
+                z_arc = R_mm * np.sin(a)
+                t_hat = np.array([np.sin(a), np.cos(a)])
+            else:
+                r_arc, z_arc = 0.0, 0.0
+                t_hat = np.array([0.0, 1.0])
 
-            # Clearance math
-            term = L_in ** 2 + 2 * c_mm * r_tube_mm - c_mm ** 2
-            theta_c = 2 * np.arctan((L_in - np.sqrt(max(0, term))) / (c_mm - 2 * r_tube_mm))
+            # B. Clearance Angle
+            L_in = max(0.0, collar_mm - max(d1, 0.0))
+            radicand = max(0.0, L_in ** 2 + 2 * c_mm * r_mm - c_mm ** 2)
+            theta_c = 2.0 * np.arctan((L_in - np.sqrt(radicand)) / (c_mm - 2.0 * r_mm))
 
+            # C. Project Target back to Planar Frame
+            cz, sz = np.cos(theta1), np.sin(theta1)
             cc, sc = np.cos(theta_c), np.sin(theta_c)
-            r_p = cc * r_target - sc * z_target
-            z_p = sc * r_target + cc * z_target
 
-            r_arc = R_mm * (1 - np.cos(alpha))
-            z_arc = R_mm * np.sin(alpha)
+            Rz_inv = np.array([[cz, sz, 0], [-sz, cz, 0], [0, 0, 1]])
+            Rx_inv = np.array([[1, 0, 0], [0, cc, sc], [0, -sc, cc]])
 
-            if abs(np.sin(alpha)) > 1e-7:
-                s_geo = (r_p - r_arc) / np.sin(alpha)
-                return (z_arc + s_geo * np.cos(alpha)) - z_p
-            return r_p - r_arc
+            p_planar = Rx_inv @ (Rz_inv @ target_mm)
 
-        # Solve in MM. Initial guess 10mm
-        d1_sol, info, ier, msg = fsolve(find_err, 10.0, full_output=True)
-        if ier != 1:
-            raise ValueError(f"IK Convergence failed: {msg}")
+            x_planar_err = p_planar[0]
+            r_t = -p_planar[1]
+            z_t = p_planar[2]
 
-        d1_mm = float(d1_sol[0])
+            # D. Tangent Projection
+            v = np.array([r_t - r_arc, z_t - z_arc])
+            s_proj = v[0] * t_hat[0] + v[1] * t_hat[1]
 
-        # Calculate d2 in MM
-        L = max(d1_mm - collar_mm, 0)
-        alpha = L / R_mm
-        L_in = max(0, collar_mm - d1_mm)
-        term = L_in ** 2 + 2 * c_mm * r_tube_mm - c_mm ** 2
-        theta_c = 2 * np.arctan((L_in - np.sqrt(max(0, term))) / (c_mm - 2 * r_tube_mm))
+            s_min = collar_mm + tool_mm
+            s_geo_final = max(s_proj, s_min)
 
-        cc, sc = np.cos(theta_c), np.sin(theta_c)
-        r_p = cc * r_target - sc * z_target
-        r_arc = R_mm * (1 - np.cos(alpha))
+            # E. Residual & Penalty
+            p_calc = np.array([r_arc, z_arc]) + s_geo_final * t_hat
+            err_vec = p_calc - np.array([r_t, z_t])
 
-        if abs(np.sin(alpha)) > 1e-7:
-            s_geo = (r_p - r_arc) / np.sin(alpha)
-        else:
-            z_p = sc * r_target + cc * z_target
-            s_geo = z_p
+            d2_implied = d1 + s_geo_final - collar_mm - tool_mm
+            penalty = 0.0
+            if d2_implied < d1:
+                penalty = (d1 - d2_implied) ** 2 * 1000 + 100
 
-        d2_mm = float(s_geo + L - tool_mm)
+            return float(np.sum(err_vec ** 2) + x_planar_err ** 2 + penalty)
 
-        # RETURN EVERYTHING CONVERTED BACK TO METERS
-        # [inner_rot, outer_rot, inner_trans_m, outer_trans_m, tool_m]
-        return [0.0, theta, d1_mm / 1000.0, d2_mm / 1000.0, 0.0]
+        # 4. Step 2: 1D Bounded Search
+        res = minimize_scalar(
+            physical_cost_exact,
+            bounds=(0.0, D1_MAX_MM),
+            method='bounded',
+            options={'xatol': 1e-10}
+        )
+
+        d1_star = float(res.x)
+        min_cost = float(res.fun)
+
+        # 5. Step 3: Reconstruction
+        # Get s_geo_star for the optimal d1
+        # To avoid re-writing logic, we temporarily re-calculate s_geo_star
+        L_final = max(d1_star - collar_mm, 0.0)
+        a_final = L_final / R_mm
+        L_in_final = max(0.0, collar_mm - d1_star)
+        rad_final = max(0.0, L_in_final ** 2 + 2 * c_mm * r_mm - c_mm ** 2)
+        theta_c_final = 2.0 * np.arctan((L_in_final - np.sqrt(rad_final)) / (c_mm - 2.0 * r_mm))
+
+        cz, sz = np.cos(theta1), np.sin(theta1)
+        cc, sc = np.cos(theta_c_final), np.sin(theta_c_final)
+        p_planar = np.array([[1, 0, 0], [0, cc, sc], [0, -sc, cc]]) @ \
+                   (np.array([[cz, sz, 0], [-sz, cz, 0], [0, 0, 1]]) @ target_mm)
+
+        r_t, z_t = -p_planar[1], p_planar[2]
+        r_arc = R_mm * (1.0 - np.cos(a_final)) if L_final > 0 else 0.0
+        z_arc = R_mm * np.sin(a_final) if L_final > 0 else 0.0
+        t_hat = np.array([np.sin(a_final), np.cos(a_final)]) if L_final > 0 else np.array([0.0, 1.0])
+
+        s_geo_star = max((r_t - r_arc) * t_hat[0] + (z_t - z_arc) * t_hat[1], collar_mm + tool_mm)
+        d2_star = s_geo_star + d1_star - collar_mm - tool_mm
+
+        # 6. Step 4: Final Validation
+        if d2_star < (d1_star - 1e-3) or np.sqrt(min_cost) > 0.5:
+            raise ValueError(f"Unreachable Target: Position error {np.sqrt(min_cost):.4f} mm exceeds tolerance.")
+
+        # RETURN EVERYTHING IN METERS [theta1, theta2, d1_m, d2_m, tool_m]
+        return [theta1, theta2, d1_star / 1000.0, d2_star / 1000.0, self.tool_len]
 
     def check_grid_feasibility(self, grid, push_depth, push_dir):
         """Checks every point in grid and logs failures."""
         failures = []
         for i, pt in enumerate(grid):
-            # Check base point
+            # Surface point
             try:
                 self.solve_ik(pt[:3])
             except Exception as e:
-                failures.append(f"Point {i} Surface: {e}")
-            
-            # Check depth point
-            p_push = np.array(pt[:3]) + push_depth * push_dir
+                failures.append(f"Pt {i} Surface: {e}")
+
+            # Push point
             try:
+                p_push = np.array(pt[:3]) + push_depth * np.array(push_dir)
                 self.solve_ik(p_push)
             except Exception as e:
-                failures.append(f"Point {i} Push: {e}")
-        
+                failures.append(f"Pt {i} Push: {e}")
         return failures

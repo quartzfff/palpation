@@ -38,7 +38,7 @@ class PalpationGrid(Node):
         super().__init__('palpation_grid')
 
         # 1. Initialize Kinematics (Strictly METERS)
-        self.kin = VirtuosoKinematics(kappa=60.0, tool_len=0.0)
+        self.kin = VirtuosoKinematics(kappa=30.0, tool_len=15.0)
 
         # Publishers / Subscribers
         self.jp_pub = self.create_publisher(JointState, '/ves/left/joint/servo_jp', 10)
