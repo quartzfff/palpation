@@ -3,7 +3,7 @@ from scipy.optimize import minimize_scalar
 
 
 class VirtuosoKinematics:
-    def __init__(self, kappa=60.0, tool_len=0.015):
+    def __init__(self, kappa=28.5, tool_len=0.015):
         # All inputs in METERS
         self.kappa = kappa
         self.tool_len = tool_len
@@ -118,7 +118,7 @@ class VirtuosoKinematics:
             raise ValueError(f"Unreachable Target: Position error {np.sqrt(min_cost):.4f} mm exceeds tolerance.")
 
         # RETURN EVERYTHING IN METERS [theta1, theta2, d1_m, d2_m, tool_m]
-        return [theta1, theta2, d1_star / 1000.0, d2_star / 1000.0, self.tool_len]
+        return [0, theta2, d1_star / 1000.0, d2_star / 1000.0]
 
     def check_grid_feasibility(self, grid, push_depth, push_dir):
         """Checks every point in grid and logs failures."""

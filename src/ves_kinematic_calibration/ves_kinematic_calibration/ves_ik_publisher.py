@@ -38,7 +38,7 @@ class PalpationGrid(Node):
         super().__init__('palpation_grid')
 
         # 1. Initialize Kinematics (Strictly METERS)
-        self.kin = VirtuosoKinematics(kappa=30.0, tool_len=15.0)
+        self.kin = VirtuosoKinematics(kappa=28.5, tool_len=0.015)
 
         # Publishers / Subscribers
         self.jp_pub = self.create_publisher(JointState, '/ves/left/joint/servo_jp', 10)
@@ -51,14 +51,14 @@ class PalpationGrid(Node):
         self.record_pause_time = 2.0
         self.home_pause_time = 2.0
 
-        self.push_depth = 0.007  # 7mm
+        self.push_depth = 0.001  # 7mm
         self.push_direction = normalize([-0.1, -0.8, -0.1])
         self.home_pose = [0.0, 0.0, 0.0, 0, 0, 0, 1]
 
         # Waypoint Grid (METERS)
         self.grid_points = [
-            [-0.00900, -0.006, 0.015, 0, 0, 0, 1],
-            [-0.00825, -0.006, 0.015, 0, 0, 0, 1],
+            [0, -0.005, 0.0193, 0, 0, 0, 1],
+ 
         ]
 
         # State Variables
@@ -77,7 +77,7 @@ class PalpationGrid(Node):
 
         # CSV Setup (Logging in Meters)
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        filename = f'palpation_data_{timestr}.csv'
+        filename = f'palpation_IKdata_{timestr}.csv'
         self.logfile = open(filename, 'w', newline='')
         self.csv_writer = csv.writer(self.logfile)
         self.csv_writer.writerow([

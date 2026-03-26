@@ -63,67 +63,68 @@ class JointCalibrationCollector(Node):
         self.home_joints = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.joint_grid = [
             [0.0, 0.0, 0.01, 0.005, 0.0],
-            [0.0, 0.0, 0.011, 0.006, 0.0],
-            [0.0, 0.0, 0.012, 0.007, 0.0],
+
             [0.0, 0.0, 0.013, 0.008, 0.0],
-            [0.0, 0.0, 0.014, 0.009, 0.0],
+  
             [0.0, 0.0, 0.015, 0.010, 0.0],
-            [0.0, 0.0, 0.016, 0.011, 0.0],
+
             [0.0, 0.0, 0.017, 0.012, 0.0],
-            [0.0, 0.0, 0.018, 0.013, 0.0],
+
             [0.0, 0.0, 0.019, 0.014, 0.0],
-            [0.0, 0.0, 0.020, 0.015, 0.0],
+   
             [0.0, 0.0, 0.021, 0.016, 0.0],
-            [0.0, 0.0, 0.022, 0.017, 0.0],
+
             [0.0, 0.0, 0.023, 0.018, 0.0],
             [0.0, 0.0, 0.024, 0.019, 0.0],
 
+          [0.0, 0.0, 0.0, 0.0, 0.0],
 
             [0.0, 3.14, 0.01, 0.005, 0.0],
-            [0.0, 3.14, 0.011, 0.006, 0.0],
-            [0.0, 3.14, 0.012, 0.007, 0.0],
+
             [0.0, 3.14, 0.013, 0.008, 0.0],
-            [0.0, 3.14, 0.014, 0.009, 0.0],
+
             [0.0, 3.14, 0.015, 0.010, 0.0],
-            [0.0, 0.0, 0.016, 0.011, 0.0],
-            [0.0, 0.0, 0.017, 0.012, 0.0],
-            [0.0, 0.0, 0.018, 0.013, 0.0],
-            [0.0, 0.0, 0.019, 0.014, 0.0],
-            [0.0, 0.0, 0.020, 0.015, 0.0],
-            [0.0, 0.0, 0.021, 0.016, 0.0],
-            [0.0, 0.0, 0.022, 0.017, 0.0],
-            [0.0, 0.0, 0.023, 0.018, 0.0],
-            [0.0, 0.0, 0.024, 0.019, 0.0],
+
+            [0.0, 3.14, 0.017, 0.012, 0.0],
+
+            [0.0, 3.14, 0.019, 0.014, 0.0],
+
+            [0.0, 3.14, 0.021, 0.016, 0.0],
+     
+            [0.0, 3.14, 0.023, 0.018, 0.0],
+            [0.0, 3.14, 0.024, 0.019, 0.0],
+
+                      [0.0, 0.0, 0.0, 0.0, 0.0],
 
             [0.0, 1.57, 0.01, 0.005, 0.0],
-            [0.0, 1.57, 0.011, 0.006, 0.0],
-            [0.0, 1.57, 0.012, 0.007, 0.0],
+
             [0.0, 1.57, 0.013, 0.008, 0.0],
-            [0.0, 1.57, 0.014, 0.009, 0.0],
+
             [0.0, 1.57, 0.015, 0.010, 0.0],
-            [0.0, 1.57, 0.016, 0.011, 0.0],
+
             [0.0, 1.57, 0.017, 0.012, 0.0],
-            [0.0, 1.57, 0.018, 0.013, 0.0],
+   
             [0.0, 1.57, 0.019, 0.014, 0.0],
-            [0.0, 1.57, 0.020, 0.015, 0.0],
+  
             [0.0, 1.57, 0.021, 0.016, 0.0],
-            [0.0, 1.57, 0.022, 0.017, 0.0],
+   
             [0.0, 1.57, 0.023, 0.018, 0.0],
             [0.0, 1.57, 0.024, 0.019, 0.0],
 
+                      [0.0, 0.0, 0.0, 0.0, 0.0],
+
             [0.0, -1.57, 0.01, 0.005, 0.0],
-            [0.0, -1.57, 0.011, 0.006, 0.0],
-            [0.0, -1.57, 0.012, 0.007, 0.0],
+
             [0.0, -1.57, 0.013, 0.008, 0.0],
-            [0.0, -1.57, 0.014, 0.009, 0.0],
+     
             [0.0, -1.57, 0.015, 0.010, 0.0],
-            [0.0, -1.57, 0.016, 0.011, 0.0],
+   
             [0.0, -1.57, 0.017, 0.012, 0.0],
-            [0.0, -1.57, 0.018, 0.013, 0.0],
+  
             [0.0, -1.57, 0.019, 0.014, 0.0],
-            [0.0, -1.57, 0.020, 0.015, 0.0],
+
             [0.0, -1.57, 0.021, 0.016, 0.0],
-            [0.0, -1.57, 0.022, 0.017, 0.0],
+    
             [0.0, -1.57, 0.023, 0.018, 0.0],
             [0.0, -1.57, 0.024, 0.019, 0.0],
 
@@ -140,7 +141,7 @@ class JointCalibrationCollector(Node):
         self.pause_timer = None
 
         # CSV Setup
-        self.logfile = open('joint_calibration_jp_002.csv', 'w', newline='')
+        self.logfile = open('joint_calibration_jp_old.csv', 'w', newline='')
         self.csv_writer = csv.writer(self.logfile)
         self.csv_writer.writerow([
             'time', 'point_index', 'phase',
@@ -226,17 +227,18 @@ class JointCalibrationCollector(Node):
         # 3. Record at Waypoint
         elif self.state == "RECORD_WAYPOINT":
             self.get_logger().info(f"📸 Recording Point {self.point_index}...")
-            self.start_pause("waypoint", self.pause_time, "MOVE_TO_HOME_RESET", record=True)
+            self.start_pause("waypoint", self.pause_time, "ADVANCE_POINT", record=True)
+            #self.start_pause("waypoint", self.pause_time, "MOVE_TO_HOME_RESET", record=True)
 
-        # 4. Return Home
-        elif self.state == "MOVE_TO_HOME_RESET":
-            self.get_logger().info(f"🏠 [Point {self.point_index}] Resetting to Home...")
-            self.start_motion(self.last_joint_cmd, self.home_joints, "HOME_SETTLE_PAUSE")
+        # # 4. Return Home
+        # elif self.state == "MOVE_TO_HOME_RESET":
+        #     self.get_logger().info(f"🏠 [Point {self.point_index}] Resetting to Home...")
+        #     self.start_motion(self.last_joint_cmd, self.home_joints, "HOME_SETTLE_PAUSE")
 
-        # 5. Wait at Home for 1 second (No recording)
-        elif self.state == "HOME_SETTLE_PAUSE":
-            self.get_logger().info(f"⌛ Settling at home for {self.home_settle_wait}s...")
-            self.start_pause("home_settle", self.home_settle_wait, "ADVANCE_POINT", record=False)
+        # # 5. Wait at Home for 1 second (No recording)
+        # elif self.state == "HOME_SETTLE_PAUSE":
+        #     self.get_logger().info(f"⌛ Settling at home for {self.home_settle_wait}s...")
+        #     self.start_pause("home_settle", self.home_settle_wait, "ADVANCE_POINT", record=False)
 
         # 6. Advance
         elif self.state == "ADVANCE_POINT":
