@@ -79,7 +79,7 @@ class PalpationGrid(Node):
         self.home_pause_time = 2.0
         self.baseline_time = 2.0
 
-        self.push_depth = 0.004
+        self.push_depth = 0.005
         #self.push_direction = normalize([-0.007, -0.89, 0.45])
         self.push_direction = normalize([-0.0, -0.9, -0.1])
 
@@ -107,11 +107,11 @@ class PalpationGrid(Node):
                 # [0.00400, -0.019, 0.034, 0, 0, 0, 1],
                 # [0.00700, -0.019, 0.034, 0, 0, 0, 1],
 
-                [-0.008, -0.008, 0.025, 0, 0, 0, 1],
-                [-0.006, -0.008, 0.025, 0, 0, 0, 1],
-                [-0.004, -0.008, 0.025, 0, 0, 0, 1],
-                [-0.002, -0.008, 0.025, 0, 0, 0, 1],
-                [0.0000, -0.008, 0.025, 0, 0, 0, 1],
+                [-0.008, -0.009, 0.025, 0, 0, 0, 1],
+                [-0.006, -0.009, 0.025, 0, 0, 0, 1],
+                [-0.004, -0.009, 0.025, 0, 0, 0, 1],
+                [-0.002, -0.009, 0.025, 0, 0, 0, 1],
+                [0.0000, -0.009, 0.025, 0, 0, 0, 1],
                
 
 
@@ -562,7 +562,7 @@ class PalpationGrid(Node):
         self.pause_timer = None
 
         # CSV
-        self.logfile = open('one_line.csv', 'w', newline='')
+        self.logfile = open('line_15mm.csv', 'w', newline='')
         self.csv_writer = csv.writer(self.logfile)
 
         self.csv_writer.writerow([
