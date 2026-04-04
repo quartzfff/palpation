@@ -141,7 +141,7 @@ class JointCalibrationCollector(Node):
         self.pause_timer = None
 
         # CSV Setup
-        self.logfile = open('joint_calibration_15mm_001.csv', 'w', newline='')
+        self.logfile = open('joint_calibration_15mm_new.csv', 'w', newline='')
         self.csv_writer = csv.writer(self.logfile)
         self.csv_writer.writerow([
             'time', 'point_index', 'phase',
