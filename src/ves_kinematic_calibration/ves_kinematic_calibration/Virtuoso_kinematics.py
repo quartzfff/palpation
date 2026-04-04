@@ -97,7 +97,7 @@ class VirtuosoKinematics:
         c_mm = self.c_m * 1000.0
         D1_MAX_MM = 100.0 
 
-        theta_base = float(np.arctan2(-target_mm[0], -target_mm[1]))
+        theta_base = float(np.arctan2(target_mm[0], -target_mm[1]))
         r_target_xy = np.sqrt(target_mm[0]**2 + target_mm[1]**2)
         z_target = target_mm[2]
 
@@ -152,4 +152,4 @@ class VirtuosoKinematics:
         s_geo_star = max((r_t_f - r_arc_f) * t_hat_f[0] + (z_t_f - z_arc_f) * t_hat_f[1], collar_mm + tool_mm)
         d2_star = s_geo_star + d1_star - collar_mm - tool_mm
 
-        return [theta_base, theta_base, d1_star / 1000.0, d2_star / 1000.0, t_val]
+        return [theta_base, 0, d1_star / 1000.0, d2_star / 1000.0, t_val]
