@@ -35,6 +35,7 @@ setup(
             'jp_calibration = ves_kinematic_calibration.jp_calibration:main',
             'force_cp = ves_kinematic_calibration.force_cp:main',
             'ves_ik_publisher = ves_kinematic_calibration.ves_ik_publisher:main',
+            'ves_ik_publisher_wforce = ves_kinematic_calibration.ves_ik_publisher_wforce:main',
         ],
     },
 )
