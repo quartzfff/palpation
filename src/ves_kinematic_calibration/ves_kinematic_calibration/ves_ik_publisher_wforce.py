@@ -41,7 +41,7 @@ class PalpationGrid(Node):
         super().__init__('palpation_grid')
 
         # 1. Initialize Kinematics
-        self.kin = VirtuosoKinematics(kappa_ik=22.3, kappa_fk=60.0, tool_len=0.015)
+        self.kin = VirtuosoKinematics(kappa_ik=60, kappa_fk=60.0, tool_len=0.02)
 
         # Publishers / Subscribers
         self.cp_pub = self.create_publisher(PoseStamped, '/ves/left/joint/servo_cp', 10)
@@ -68,7 +68,7 @@ class PalpationGrid(Node):
         # This allows you to define unique directions/depths for every site.
         raw_pairs = [
             # Site 1: [px, py, pz, ox, oy, oz, ow]
-            [ [0.012, -0.005, 0.025, 0, 0, 0, 1], [0.012, -0.012, 0.025, 0, 0, 0, 1] ],
+           #[ [0.012, -0.005, 0.025, 0, 0, 0, 1], [0.012, -0.012, 0.025, 0, 0, 0, 1] ],
             # Site 2: Push in a different direction (e.g., diagonal)
             [ [0.004, 0.0, 0.027, 0, 0, 0, 1],    [0.008, -0.005, 0.030, 0, 0, 0, 1] ],
         ]
