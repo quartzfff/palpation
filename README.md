@@ -31,7 +31,7 @@ ros2 run ves_ros_interface ves_ros_interface \
   --no-visualizer \
   --left-sid-disconnected \
   --right-sid-disconnected \
-  --no-kuka
+  --no-kuka --left-tool-length=0.02
 ```
 
 ---
